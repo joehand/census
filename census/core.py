@@ -2,6 +2,8 @@ from functools import wraps
 from xml.etree.ElementTree import XML
 import json
 
+import requests
+
 __version__ = "0.7"
 
 ALL = '*'
@@ -66,7 +68,6 @@ class UnsupportedYearException(CensusException):
 class Client(object):
 
     def __init__(self, key, year=None, session=None):
-        import requests
         self._key = key
         self.session = session or requests.session()
         if year:
@@ -76,7 +77,9 @@ class Client(object):
     def years(self):
         return [int(y) for y in DEFINITIONS[self.dataset].keys()]
 
-    def fields(self, year, flat=False):
+    def fields(self, year=None, flat=False):
+        if not year:
+            year = self.default_year
 
         data = {}
 
